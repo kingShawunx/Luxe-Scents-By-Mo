@@ -1,0 +1,90 @@
+/* =========================================================
+   LUXE SCENT BY MO - Firestore Security Rules
+   =========================================================
+   Deploy via:  firebase deploy --only firestore:rules
+   Before deploying, replace every occurrence of
+   "REPLACE_WITH_SELLER_FIREBASE_UID" (below) with the seller's
+   real Firebase UID, AND set that same value in firebase-config.js
+   (window.SELLER_UID) so customers create conversations with the
+   correct seller id.
+   Also set a `seller: true` custom claim on the seller account
+   (via Firebase Admin). Customers do NOT get this claim.
+   ========================================================= */
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /* ---------------- USERS ----------------
+       A user can read/write ONLY their own profile. */
+    match /users/{userId} {
+      allow read, update: if request.auth != null && request.auth.uid == userId;
+
+      allow create: if request.auth != null
+                    && request.resource.data.keys().hasAll(['uid', 'email'])
+                    && request.resource.data.uid == request.auth.uid
+                    && request.resource.data.role == "customer";
+    }
+
+    /* ---------------- CONVERSATIONS ----------------
+       One conversation per customer: doc id = "c_<customerId>".
+       customerId -> the customer (uid)
+       sellerId   -> the seller/admin uid                 */
+    match /conversations/{conversationId} {
+
+      // Only the owner-customer OR the seller admin may read a conversation.
+      allow read: if request.auth != null && isConversationParticipant(conversationId);
+
+      // A customer may CREATE their own conversation with the seller.
+      allow create: if request.auth != null
+                    && request.resource.data.customerId == request.auth.uid
+                    && request.resource.data.sellerId == "REPLACE_WITH_SELLER_FIREBASE_UID"
+                    && request.resource.data.status == "open";
+
+      // A customer may update lastMessage / unread counters only.
+      // They MUST NOT change customerId or sellerId.
+      allow update: if request.auth != null
+                    && isConversationParticipant(conversationId)
+                    && request.resource.data.customerId == resource.data.customerId
+                    && request.resource.data.sellerId == resource.data.sellerId;
+
+      allow delete: if request.auth.token.seller == true;
+
+      /* ---------------- MESSAGES (secure per-conversation) ---------------- */
+      match /messages/{messageId} {
+        // Only participants of THIS conversation read messages.
+        allow read: if isConversationParticipant(conversationId);
+
+        // Create: only a participant sending AS THEMSELVES,
+        // into this conversation. Prevents impersonation / cross-chat.
+        allow create: if request.auth != null
+                      && isConversationParticipant(conversationId)
+                      && request.resource.data.senderId == request.auth.uid
+                      && request.resource.data.conversationId == conversationId;
+
+        // Messages are append-only.
+        allow update, delete: if false;
+      }
+    }
+
+    /* ---------------- ORDERS ---------------- */
+    match /orders/{orderId} {
+      allow read: if request.auth != null
+                  && (resource.data.customerId == request.auth.uid
+                      || request.auth.token.seller == true);
+      allow create: if request.auth != null
+                    && request.resource.data.customerId == request.auth.uid;
+      allow update: if request.auth.token.seller == true;
+      allow delete: if false;
+    }
+
+    /* ---------------- HELPERS ---------------- */
+    function isConversationParticipant(conversationId) {
+      let conv = get(/databases/$(database)/documents/conversations/$(conversationId)).data;
+      return request.auth != null
+             && (conv.customerId == request.auth.uid
+                 || request.auth.uid == conv.sellerId
+                 || request.auth.token.seller == true);
+    }
+  }
+}

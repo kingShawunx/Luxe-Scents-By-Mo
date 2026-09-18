@@ -1,0 +1,390 @@
+/* =========================================================
+   LUXE SCENT BY MO
+   AUTH + CHAT (supplement to style.css)
+   ========================================================= */
+
+/* Shared dark section look for auth / chat pages */
+.auth-section,
+.chat-section {
+    background:
+        linear-gradient(
+            135deg,
+            #3a0509,
+            #650d14
+        );
+
+    color: #fff;
+
+    min-height: calc(100vh - 160px);
+}
+
+.auth-section .auth-card,
+.chat-section .chat-card {
+    background: rgba(255, 255, 255, 0.95);
+
+    margin: 0 auto;
+
+    max-width: 420px;
+
+    padding: 36px 32px;
+
+    border-radius: 10px;
+
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.auth-section h2,
+.chat-section h2 {
+    margin-bottom: 22px;
+
+    font-family: "Fraunces", Georgia, serif;
+
+    font-size: 26px;
+    font-weight: 600;
+
+    text-align: center;
+
+    color: #4a080d;
+}
+
+.auth-section .eyebrow,
+.chat-section .eyebrow {
+    justify-content: center;
+}
+
+
+/* ---------- AUTH FORM FIELDS ---------- */
+
+.auth-field {
+    margin-bottom: 18px;
+}
+
+.auth-field label {
+    display: block;
+
+    margin-bottom: 6px;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    text-transform: uppercase;
+    letter-spacing: 1px;
+
+    color: #4a080d;
+}
+
+.auth-field input {
+    width: 100%;
+
+    padding: 12px 14px;
+
+    border: 1px solid rgba(70, 0, 8, 0.18);
+    border-radius: 6px;
+
+    background: #f8f3ed;
+
+    font-family: "Inter", sans-serif;
+    font-size: 15px;
+
+    color: #2d090c;
+}
+
+.auth-field input:focus {
+    outline: none;
+
+    border-color: #d5aa55;
+
+    background: #fff;
+}
+
+.auth-error {
+    margin: 12px 0;
+
+    color: #d94a4a;
+
+    font-size: 13px;
+}
+
+.auth-success {
+    margin: 12px 0;
+
+    color: #2d7d2a;
+
+    font-size: 13px;
+}
+
+.auth-actions {
+    margin-top: 22px;
+
+    text-align: center;
+}
+
+.auth-actions .btn {
+    width: 100%;
+}
+
+.auth-switch {
+    margin-top: 18px;
+
+    text-align: center;
+
+    font-size: 14px;
+}
+
+.auth-switch a {
+    color: #d5aa55;
+}
+
+
+/* ---------- CHAT ---------- */
+
+.chat-card {
+    height: 70vh;
+
+    max-height: 640px;
+
+    padding: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.chat-messages {
+    flex: 1;
+
+    overflow-y: auto;
+
+    padding: 24px 20px;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 16px;
+}
+
+.chat-bubble {
+    max-width: 75%;
+
+    padding: 12px 16px;
+
+    border-radius: 16px;
+
+    font-size: 14px;
+    line-height: 1.5;
+
+    word-break: break-word;
+}
+
+.chat-bubble.me {
+    align-self: flex-end;
+
+    background: #d5aa55;
+    color: #350006;
+
+    border-bottom-right-radius: 6px;
+}
+
+.chat-bubble.them {
+    align-self: flex-start;
+
+    background: #f8f3ed;
+    color: #2d090c;
+
+    border-bottom-left-radius: 6px;
+}
+
+.chat-meta {
+    font-size: 11px;
+    opacity: 0.7;
+
+    margin-top: 6px;
+}
+
+.chat-input {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 16px 20px;
+
+    border-top: 1px solid rgba(70, 0, 8, 0.1);
+
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.chat-input input {
+    flex: 1;
+
+    padding: 12px 14px;
+
+    border: 1px solid rgba(70, 0, 8, 0.18);
+    border-radius: 20px;
+
+    background: #f8f3ed;
+
+    font-family: "Inter", sans-serif;
+    font-size: 15px;
+
+    color: #2d090c;
+}
+
+.chat-input input:focus {
+    outline: none;
+
+    border-color: #d5aa55;
+
+    background: #fff;
+}
+
+.chat-send .btn {
+    min-height: 44px;
+
+    padding: 12px 24px;
+}
+
+
+/* ---------- FLOATING CHAT BUTTON ---------- */
+
+.chat-float {
+    position: fixed;
+
+    bottom: 24px;
+    right: 24px;
+
+    z-index: 999;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    height: 48px;
+    padding: 0 18px;
+
+    border: 1px solid #b88a32;
+    border-radius: 30px;
+
+    background: #a51d25;
+    color: #fff;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    letter-spacing: 1px;
+    text-transform: uppercase;
+
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.chat-float:hover {
+    background: #d5aa55;
+    color: #350006;
+
+    transform: translateY(-2px);
+}
+
+
+/* ---------- SELLER INBOX ---------- */
+
+.seller-inbox {
+    max-width: var(--container);
+
+    margin: 0 auto;
+
+    padding: 40px 24px;
+}
+
+.seller-inbox h2 {
+    color: #d5aa55;
+
+    text-align: center;
+}
+
+.conversation-list {
+    display: grid;
+
+    grid-template-columns: 300px 1fr;
+
+    gap: 24px;
+
+    margin-top: 24px;
+}
+
+.conversation-list-item {
+    background: rgba(255, 255, 255, 0.1);
+
+    border: 1px solid rgba(213, 170, 85, 0.25);
+
+    border-radius: 8px;
+
+    padding: 14px;
+
+    cursor: pointer;
+
+    transition: background 0.3s ease;
+}
+
+.conversation-list-item:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.conversation-list-item .name {
+    color: #fff;
+
+    font-weight: 600;
+}
+
+.conversation-list-item .last {
+    color: #eadbdb;
+
+    font-size: 13px;
+}
+
+
+/* ---------- TABLET ---------- */
+
+@media (max-width: 1100px) {
+    .auth-section .auth-card,
+    .chat-section .chat-card {
+        max-width: 480px;
+    }
+
+    .chat-bubble {
+        max-width: 80%;
+    }
+}
+
+
+/* ---------- MOBILE ---------- */
+
+@media (max-width: 850px) {
+    .auth-section .auth-card,
+    .chat-section .chat-card {
+        margin: 20px 12px;
+
+        padding: 28px 22px;
+    }
+
+    .conversation-list {
+        grid-template-columns: 1fr;
+    }
+
+    .chat-bubble {
+        max-width: 85%;
+    }
+
+    .chat-float {
+        bottom: 16px;
+        right: 16px;
+
+        padding: 0 14px;
+
+        height: 44px;
+
+        font-size: 11px;
+    }
+}

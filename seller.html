@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Seller Inbox | LUXE SCENT BY MO | Luxury Perfume Oils</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="auth.css">
+</head>
+
+<body>
+
+    <!-- SKIP LINK -->
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <!-- HEADER -->
+    <header>
+
+        <div class="logo">
+            <img src="Half part Logo.jpeg" alt="LUXE SCENT BY MO logo">
+            <h1>LUXE SCENT BY MO</h1>
+        </div>
+
+        <nav id="nav-menu" aria-label="Primary">
+            <a href="index.html">Home</a>
+            <a href="shop.html">Shop</a>
+            <a href="about.html">About</a>
+            <a href="collection.html">Collection</a>
+            <a href="testimonials.html">Testimonials</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+
+        <button
+            class="menu-btn"
+            onclick="toggleMenu()"
+            aria-label="Toggle navigation menu"
+            aria-expanded="false"
+            aria-controls="nav-menu"
+        >
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+
+    </header>
+
+
+    <!-- MAIN -->
+    <main id="main">
+
+        <section class="chat-section">
+
+            <div class="seller-inbox">
+
+                <h2>Customer Conversations</h2>
+
+                <div class="conversation-list">
+                    <div id="conversation-sidebar" style="background:rgba(0,0,0,0.2);border-radius:8px;padding:16px;overflow-y:auto;max-height:640px;">
+                        <p style="color:#eadbdb;">Loading conversations…</p>
+                    </div>
+
+                    <div id="conversation-detail" style="background:rgba(255,255,255,0.95);border-radius:8px;display:flex;flex-direction:column;overflow:hidden;">
+                        <div class="chat-messages" id="seller-messages" style="flex:1;">
+                            <p style="padding:20px;color:#7a5256;">Select a customer to start chatting.</p>
+                        </div>
+                        <div class="chat-input">
+                            <input type="text" id="seller-input" placeholder="Type a reply…" autocomplete="off" disabled>
+                            <button type="button" class="btn chat-send" id="seller-send" disabled>Send</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- FOOTER -->
+    <footer>
+
+        <h2>LUXE SCENT BY MO</h2>
+
+        <p>
+            Luxury fragrances. Lasting impressions.
+        </p>
+
+        <p>
+            © 2026 Luxe Scent by Mo. All Rights Reserved.
+        </p>
+
+    </footer>
+
+
+    <!-- Firebase SDK (compat) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="auth.js"></script>
+    <script src="chat.js"></script>
+    <script src="auth-ui.js"></script>
+
+    <script>
+        (function () {
+            "use strict";
+            var sidebar = document.getElementById("conversation-sidebar");
+            var messagesEl = document.getElementById("seller-messages");
+            var inputEl = document.getElementById("seller-input");
+            var sendBtn = document.getElementById("seller-send");
+            var activeConv = null;
+            var unsubMsg = null;
+
+            function escapeHtml(s) {
+                return String(s).replace(/[&<>"']/g, function (c) {
+                    return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c];
+                });
+            }
+
+            AuthUI.initAuth(function (user) {
+                if (!user) { AuthUI.redirect("login.html"); return; }
+                user.getIdTokenResult().then(function (idr) {
+                    var isSeller = idr.claims.seller === true || user.uid === window.SELLER_UID;
+                    if (!isSeller) { AuthUI.redirect("login.html"); return; }
+
+                    LuxeAuth.getUserProfile(window.SELLER_UID).then(function (sp) {
+                        document.querySelector("h2").textContent =
+                            "Customer Conversations — " + (sp && sp.displayName ? sp.displayName : "Seller");
+                    }).catch(function () {});
+
+                    Luxechat.listAllConversations().then(function (convs) {
+                        if (!convs.length) {
+                            sidebar.innerHTML = "<p style='color:#eadbdb;'>No conversations yet.</p>";
+                            return;
+                        }
+                        sidebar.innerHTML = "";
+                        convs.forEach(function (c) {
+                            var div = document.createElement("div");
+                            div.className = "conversation-list-item";
+                            div.setAttribute("data-id", c.id);
+                            var name = c.customerName || "Customer";
+                            var last = c.lastMessage || "(no messages yet)";
+                            div.innerHTML =
+                                "<div class='name'>" + escapeHtml(name) + "</div>" +
+                                "<div class='last'>" + escapeHtml(last) + "</div>";
+                            sidebar.appendChild(div);
+                        });
+                    }).catch(function (err) {
+                        sidebar.innerHTML = "<p style='color:#d94a4a;'>Failed to load conversations.</p>";
+                    });
+
+                    // Click a conversation
+                    sidebar.addEventListener("click", function (e) {
+                        var item = e.target.closest(".conversation-list-item");
+                        if (!item) return;
+                        var id = item.getAttribute("data-id");
+                        openConversation(id);
+                    });
+
+                    // Send reply
+                    sendBtn.addEventListener("click", sendReply);
+                    inputEl.addEventListener("keypress", function (e) { if (e.key === "Enter") sendReply(); });
+                });
+            });
+
+            function openConversation(id) {
+                if (unsubMsg) unsubMsg();
+                activeConv = id;
+                inputEl.disabled = false;
+                sendBtn.disabled = false;
+                Luxechat.markConversationRead(id);
+                sidebar.querySelectorAll(".conversation-list-item").forEach(function (it) {
+                    it.style.background = "rgba(255,255,255,0.1)";
+                });
+                var active = sidebar.querySelector(".conversation-list-item[data-id='" + id + "']");
+                if (active) active.style.background = "rgba(255,255,255,0.3)";
+
+                messagesEl.innerHTML = "<p style='padding:20px;color:#7a5256;'>Loading…</p>";
+                unsubMsg = Luxechat.listenMessages(id, renderMessages);
+            }
+
+            function renderMessages(messages) {
+                var uid = Luxechat.currentUid();
+                if (!messages.length) {
+                    messagesEl.innerHTML = "<p style='padding:20px;color:#7a5256;'>No messages yet.</p>";
+                    return;
+                }
+                var html = "";
+                messages.forEach(function (m) {
+                    var isMe = m.senderId === uid;
+                    var cls = isMe ? "me" : "them";
+                    var time = m.createdAt && m.createdAt.toDate ? m.createdAt.toDate() : new Date();
+                    var timeStr = "";
+                    try { timeStr = time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }); } catch (e) {}
+                    html +=
+                        "<div class='chat-bubble " + cls + "'>" +
+                        "<div>" + escapeHtml(m.message) + "</div>" +
+                        "<div class='chat-meta'>" + (isMe ? "You" : (m.senderType === "customer" ? "Customer" : "Seller")) + ", " + timeStr + "</div>" +
+                        "</div>";
+                });
+                messagesEl.innerHTML = html;
+                messagesEl.scrollTop = messagesEl.scrollHeight;
+            }
+
+            function sendReply() {
+                var text = inputEl.value;
+                if (!text.trim() || !activeConv) return;
+                Luxechat.sendMessage(activeConv, text, "seller")
+                    .catch(function (err) { alert(err.message); });
+                inputEl.value = "";
+            }
+        })();
+    </script>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

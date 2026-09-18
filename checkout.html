@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Checkout | LUXE SCENT BY MO | Luxury Perfume Oils</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="checkout.css">
+</head>
+
+<body>
+
+    <!-- SKIP LINK -->
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <!-- HEADER -->
+    <header>
+
+        <div class="logo">
+            <img src="image/tu logo.png" alt="LUXE SCENT BY MO logo">
+            <h1>LUXE SCENT BY MO</h1>
+        </div>
+
+        <nav id="nav-menu" aria-label="Primary">
+            <a href="index.html">Home</a>
+            <a href="shop.html">Shop</a>
+            <a href="about.html">About</a>
+            <a href="collection.html">Collection</a>
+            <a href="testimonials.html">Testimonials</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+
+        <button
+            class="menu-btn"
+            onclick="toggleMenu()"
+            aria-label="Toggle navigation menu"
+            aria-expanded="false"
+            aria-controls="nav-menu"
+        >
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+
+    </header>
+
+
+    <!-- MAIN -->
+    <main id="main">
+
+        <section class="checkout-hero">
+            <div class="section-content">
+                <p class="eyebrow">CHECKOUT</p>
+                <h2>Complete Your Order</h2>
+                <p>
+                    Enter your delivery details below and review your order
+                    summary. We will contact you on WhatsApp to confirm.
+                </p>
+            </div>
+        </section>
+
+
+        <section class="checkout-section">
+            <div class="checkout-container">
+
+                <!-- CHECKOUT FORM -->
+                <form id="checkout-form" autocomplete="on" novalidate>
+                    <h3>Delivery Information</h3>
+
+                    <div class="field-group">
+                        <label for="customer-name">Full Name *</label>
+                        <input
+                            type="text"
+                            id="customer-name"
+                            name="customer-name"
+                            placeholder="Enter your full name"
+                            required>
+                    </div>
+
+                    <div class="field-group">
+                        <label for="phone">Phone Number *</label>
+                        <input
+                            type="tel"
+                            id="phone"
+                            name="phone"
+                            placeholder="+234 XXX XXX XXXX"
+                            required>
+                    </div>
+
+                    <div class="field-group">
+                        <label for="whatsapp">WhatsApp Number *</label>
+                        <input
+                            type="tel"
+                            id="whatsapp"
+                            name="whatsapp"
+                            placeholder="+234 XXX XXX XXXX"
+                            required>
+                    </div>
+
+                    <div class="field-group">
+                        <label for="address">Delivery Address *</label>
+                        <textarea
+                            id="address"
+                            name="address"
+                            rows="3"
+                            placeholder="Street, building, landmark"
+                            required></textarea>
+                    </div>
+
+                    <div class="field-row">
+                        <div class="field-group">
+                            <label for="state">State *</label>
+                            <input
+                                type="text"
+                                id="state"
+                                name="state"
+                                placeholder="State"
+                                required>
+                        </div>
+
+                        <div class="field-group">
+                            <label for="city">City *</label>
+                            <input
+                                type="text"
+                                id="city"
+                                name="city"
+                                placeholder="City"
+                                required>
+                        </div>
+                    </div>
+
+                    <div class="field-group">
+                        <p class="payment-label">Payment Method *</p>
+                        <div class="radio-group">
+                            <label class="radio">
+                                <input type="radio" name="payment" value="cod" required>
+                                <span class="radio-mark"></span>
+                                Cash on Delivery (COD)
+                            </label>
+                            <label class="radio">
+                                <input type="radio" name="payment" value="transfer">
+                                <span class="radio-mark"></span>
+                                Bank Transfer
+                            </label>
+                            <label class="radio">
+                                <input type="radio" name="payment" value="pos">
+                                <span class="radio-mark"></span>
+                                POS / Mobile Money
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn place-order">
+                        Place Order
+                    </button>
+                </form>
+
+
+                <!-- ORDER SUMMARY -->
+                <aside class="order-summary">
+                    <h3>Order Summary</h3>
+
+                    <div class="order-items" id="order-items">
+                        <p class="empty">No items in your cart yet.</p>
+                    </div>
+
+                    <div class="order-totals">
+                        <div class="total-row">
+                            <span>Subtotal</span>
+                            <strong id="subtotal">₦0</strong>
+                        </div>
+                        <div class="total-row">
+                            <span>Delivery Fee</span>
+                            <strong id="delivery-fee">₦1,500</strong>
+                        </div>
+                        <div class="total-row total">
+                            <span>Total Amount</span>
+                            <strong id="total-amount">₦0</strong>
+                        </div>
+                    </div>
+                </aside>
+
+            </div>
+        </section>
+
+    </main>
+
+
+    <!-- FOOTER -->
+    <footer>
+
+        <h2>LUXE SCENT BY MO</h2>
+
+        <p>
+            Luxury fragrances. Lasting impressions.
+        </p>
+
+        <p>
+            © 2026 Luxe Scent by Mo. All Rights Reserved.
+        </p>
+
+    </footer>
+
+
+    <script src="chat-widget.js"></script>
+    <script src="script.js"></script>
+    <script src="checkout.js"></script>
+
+</body>
+
+</html>

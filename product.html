@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Product | LUXE SCENT BY MO | Luxury Perfume Oils</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="shop.css">
+    <link rel="stylesheet" href="product.css">
+</head>
+
+<body>
+
+    <!-- SKIP LINK -->
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <!-- HEADER -->
+    <header>
+
+        <div class="logo">
+            <img src="images/tu logo.png" alt="LUXE SCENT BY MO logo">
+            <h1>LUXE SCENT BY MO</h1>
+        </div>
+
+        <nav id="nav-menu" aria-label="Primary">
+            <a href="index.html">Home</a>
+            <a href="shop.html">Shop</a>
+            <a href="about.html">About</a>
+            <a href="collection.html">Collection</a>
+            <a href="testimonials.html">Testimonials</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+
+        <button
+            class="menu-btn"
+            onclick="toggleMenu()"
+            aria-label="Toggle navigation menu"
+            aria-expanded="false"
+            aria-controls="nav-menu"
+        >
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+
+        <a href="checkout.html" class="cart-link" aria-label="View cart">
+            <svg class="cart-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M7 4h14.24a2 2 0 0 1 1.66 1.58l-1.36 6.82a2 2 0 0 1-.49 1.07L17 16h-2v2a2 2 0 1 1-4 0v-2H7a2 2 0 0 1 0-4h8.59l-.94-.94a2 2 0 0 1-.29-1.07V7a4 4 0 0 0-4-4H7a1 1 0 0 0 0 2zm0 2v2H7V6a1 1 0 0 0 0 2zm-3 8a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm13 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"></path>
+            </svg>
+            <span class="cart-count" id="cart-count">0</span>
+        </a>
+
+    </header>
+
+
+    <!-- MAIN -->
+    <main id="main">
+
+        <section class="product-detail-section">
+
+            <a href="shop.html" class="back-link">&larr; Back to Shop</a>
+
+            <div class="product-detail" id="product-detail">
+
+                <div class="product-detail-image">
+                    <img src="" alt="" id="pd-image">
+                </div>
+
+                <div class="product-detail-info">
+                    <h1 id="pd-title"></h1>
+                    <div class="product-detail-price" id="pd-price"></div>
+                    <p class="product-detail-desc" id="pd-desc"></p>
+
+                    <div class="product-meta">
+                        <div><span class="meta-label">Category:</span> <span id="pd-category"></span></div>
+                        <div><span class="meta-label">Size:</span> <span id="pd-size"></span></div>
+                        <div><span class="meta-label">Notes:</span> <span id="pd-notes"></span></div>
+                    </div>
+
+                    <div class="product-actions">
+                        <button type="button" class="btn" id="pd-add-to-cart">Order Now</button>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- FOOTER -->
+    <footer>
+
+        <h2>LUXE SCENT BY MO</h2>
+
+        <p>
+            Luxury fragrances. Lasting impressions.
+        </p>
+
+        <p>
+            © 2026 Luxe Scent by Mo. All Rights Reserved.
+        </p>
+
+    </footer>
+
+
+    <script src="chat-widget.js"></script>
+    <script src="script.js"></script>
+    <script src="product.js"></script>
+    <script src="shop.js"></script>
+
+    <script>
+        (function () {
+            "use strict";
+
+            function getQueryParam(name) {
+                var params = new URLSearchParams(window.location.search);
+                return params.get(name);
+            }
+
+            var productId = getQueryParam("id") || "oud-marjan";
+            var product = LuxeProducts.getProduct(productId);
+
+            if (!product) {
+                document.getElementById("product-detail").innerHTML =
+                    "<p style='color:#7a5256;text-align:center;width:100%;'>Product not found. <a href='shop.html' style='color:#d5aa55;'>Return to shop</a>.</p>";
+                return;
+            }
+
+            document.getElementById("pd-image").src = product.image;
+            document.getElementById("pd-image").alt = product.name + " eau de parfum bottle";
+            document.getElementById("pd-title").textContent = product.name;
+            document.getElementById("pd-price").textContent = LuxeProducts.formatPrice(product.price);
+            document.getElementById("pd-desc").textContent = product.desc;
+            document.getElementById("pd-category").textContent = product.category;
+            document.getElementById("pd-size").textContent = product.size;
+            document.getElementById("pd-notes").textContent = product.notes;
+
+            document.getElementById("pd-add-to-cart").addEventListener("click", function () {
+                var cart = [];
+                var raw = localStorage.getItem("luxeScentCart");
+                if (raw) {
+                    try { cart = JSON.parse(raw); } catch (e) {}
+                }
+
+                var found = -1;
+                for (var i = 0; i < cart.length; i++) {
+                    if (cart[i].id === product.id) {
+                        found = i;
+                        break;
+                    }
+                }
+                if (found > -1) {
+                    cart[found].qty += 1;
+                } else {
+                    cart.push({ id: product.id, name: product.name, price: product.price, qty: 1 });
+                }
+                localStorage.setItem("luxeScentCart", JSON.stringify(cart));
+
+                var count = 0;
+                for (var j = 0; j < cart.length; j++) count += cart[j].qty;
+                var el = document.getElementById("cart-count");
+                if (el) {
+                    el.textContent = count;
+                    el.style.display = count ? "inline-flex" : "none";
+                }
+
+                window.location.href = "checkout.html";
+            });
+        })();
+    </script>
+
+</body>
+
+</html>

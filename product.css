@@ -1,0 +1,140 @@
+/* =========================================================
+   LUXE SCENT BY MO
+   PRODUCT DETAIL PAGE (product.css)
+   ========================================================= */
+
+.product-detail-section {
+    background: #fff;
+    padding: 80px 0;
+}
+
+.product-detail {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+
+    max-width: var(--container);
+    margin: 0 auto;
+
+    padding: 0 24px;
+}
+
+.product-detail-image {
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid rgba(70, 0, 8, 0.08);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+}
+
+.product-detail-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.product-detail-info h1 {
+    font-family: "Fraunces", Georgia, serif;
+
+    font-size: clamp(28px, 4vw, 40px);
+    font-weight: 600;
+
+    color: #4a080d;
+
+    margin-bottom: 12px;
+}
+
+.product-detail-price {
+    font-size: 24px;
+    font-weight: 700;
+
+    color: #d5aa55;
+
+    margin-bottom: 20px;
+}
+
+.product-detail-desc {
+    color: #5e4c4d;
+    font-size: 15px;
+    line-height: 1.8;
+
+    margin-bottom: 24px;
+}
+
+.product-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    margin-bottom: 24px;
+
+    font-size: 14px;
+    color: #5e4c4d;
+}
+
+.product-meta .meta-label {
+    font-weight: 600;
+    color: #4a080d;
+}
+
+.product-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    margin-top: 24px;
+}
+
+.product-actions .btn {
+    flex: 1;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    margin-bottom: 24px;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    color: #4a080d;
+
+    transition: color 0.3s ease;
+}
+
+.back-link:hover {
+    color: #8c5d16;
+}
+
+
+/* ---------- TABLET ---------- */
+
+@media (max-width: 1100px) {
+    .product-detail {
+        grid-template-columns: 1fr;
+        gap: 32px;
+    }
+
+    .product-actions {
+        flex-direction: column;
+    }
+}
+
+
+/* ---------- MOBILE ---------- */
+
+@media (max-width: 850px) {
+    .product-detail-section {
+        padding: 60px 20px;
+    }
+
+    .product-detail {
+        padding: 0;
+    }
+
+    .back-link {
+        font-size: 12px;
+    }
+}

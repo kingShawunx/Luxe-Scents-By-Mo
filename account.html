@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Account | LUXE SCENT BY MO | Luxury Perfume Oils</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="auth.css">
+</head>
+
+<body>
+
+    <!-- SKIP LINK -->
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <!-- HEADER -->
+    <header>
+
+        <div class="logo">
+            <img src="images/tu logo.png" alt="LUXE SCENT BY MO logo">
+            <h1>LUXE SCENT BY MO</h1>
+        </div>
+
+        <nav id="nav-menu" aria-label="Primary">
+            <a href="index.html">Home</a>
+            <a href="shop.html">Shop</a>
+            <a href="about.html">About</a>
+            <a href="collection.html">Collection</a>
+            <a href="testimonials.html">Testimonials</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+
+        <button
+            class="menu-btn"
+            onclick="toggleMenu()"
+            aria-label="Toggle navigation menu"
+            aria-expanded="false"
+            aria-controls="nav-menu"
+        >
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+
+    </header>
+
+
+    <!-- MAIN -->
+    <main id="main">
+
+        <section class="auth-section">
+
+            <div class="auth-card">
+
+                <h2>My Account</h2>
+
+                <div id="profile-info" style="margin-bottom:24px;">
+                    <p class="auth-success">Loading account...</p>
+                </div>
+
+                <!-- Change password -->
+                <div id="change-password-form" style="display:none;margin-top:18px;padding-top:18px;border-top:1px solid rgba(70,0,8,0.1);">
+                    <h3 style="font-family:'Fraunces',serif;font-size:18px;color:#4a080d;margin-bottom:12px;">Change Password</h3>
+                    <div class="auth-field">
+                        <label for="cp-current">Current Password *</label>
+                        <input type="password" id="cp-current" required>
+                    </div>
+                    <div class="auth-field">
+                        <label for="cp-new">New Password *</label>
+                        <input type="password" id="cp-new" required minlength="6">
+                    </div>
+                    <button type="button" class="btn" id="cp-submit">Update Password</button>
+                </div>
+
+                <!-- Orders -->
+                <div id="orders-section" style="margin-top:24px;padding-top:18px;border-top:1px solid rgba(70,0,8,0.1);">
+                    <h3 style="font-family:'Fraunces',serif;font-size:18px;color:#4a080d;margin-bottom:12px;">My Orders</h3>
+                    <div id="orders-list"><p class="auth-success">No orders yet.</p></div>
+                </div>
+
+                <!-- Actions -->
+                <div class="auth-switch">
+                    <p style="margin-top:10px;">
+                        <a href="chat.html">My Conversations (Private Chat)</a>
+                    </p>
+                    <p style="margin-top:6px;">
+                        <button type="button" class="btn btn-outline" id="logout-btn" style="margin-top:8px;">Logout</button>
+                    </p>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- FOOTER -->
+    <footer>
+
+        <h2>LUXE SCENT BY MO</h2>
+
+        <p>
+            Luxury fragrances. Lasting impressions.
+        </p>
+
+        <p>
+            © 2026 Luxe Scent by Mo. All Rights Reserved.
+        </p>
+
+    </footer>
+
+
+    <!-- Firebase SDK (compat) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="auth.js"></script>
+    <script src="auth-ui.js"></script>
+
+    <script>
+        (function () {
+            "use strict";
+
+            function wireEditProfile(name, phone, infoEl) {
+                var btn = document.getElementById("edit-profile");
+                if (!btn) return;
+                btn.addEventListener("click", function () {
+                    var newName = prompt("Full name:", name);
+                    if (newName === null) return;
+                    var newPhone = prompt("Phone number:", phone);
+                    if (newPhone === null) return;
+                    LuxeAuth.updateUser({ name: newName, phone: newPhone })
+                        .then(function () {
+                            AuthUI.showMessage(infoEl, "Profile updated.", "success");
+                            setTimeout(function () { location.reload(); }, 800);
+                        })
+                        .catch(function (err) { AuthUI.showMessage(infoEl, err.message, "error"); });
+                });
+            }
+
+            function wireChangePassword() {
+                var form = document.getElementById("change-password-form");
+                if (!form) return;
+                form.style.display = "block";
+                var submit = document.getElementById("cp-submit");
+                if (!submit) return;
+                submit.addEventListener("click", function () {
+                    var current = document.getElementById("cp-current").value;
+                    var next = document.getElementById("cp-new").value;
+                    if (!current || !next || next.length < 6) {
+                        alert("Enter your current password and a new password (min 6 chars).");
+                        return;
+                    }
+                    LuxeAuth.changePassword(current, next)
+                        .then(function () {
+                            AuthUI.showMessage(form, "Password changed.", "success");
+                            document.getElementById("cp-current").value = "";
+                            document.getElementById("cp-new").value = "";
+                        })
+                        .catch(function (err) { AuthUI.showMessage(form, err.message, "error"); });
+                });
+            }
+
+            function wireOrders() {
+                LuxeAuth.getOrders().then(function (orders) {
+                    var list = document.getElementById("orders-list");
+                    if (!orders.length) {
+                        list.innerHTML = "<p class='auth-success'>No orders yet.</p>";
+                        return;
+                    }
+                    var html = "<div style='display:grid;gap:12px;'>";
+                    orders.forEach(function (o) {
+                        html += "<div style='padding:12px;border:1px solid rgba(70,0,8,0.1);border-radius:6px;'>" +
+                            "<div style='font-weight:600;color:#4a080d;'>Order #" + (o.id || "") + "</div>" +
+                            "<div style='font-size:13px;color:#5e4c4d;'>Total: " + (o.total || "") + " &middot; Status: " + (o.status || "pending") + "</div>" +
+                            "</div>";
+                    });
+                    html += "</div>";
+                    list.innerHTML = html;
+                }).catch(function () {
+                    document.getElementById("orders-list").innerHTML = "<p class='auth-error'>Could not load orders.</p>";
+                });
+            }
+
+            function wireLogout() {
+                var btn = document.getElementById("logout-btn");
+                if (!btn) return;
+                btn.addEventListener("click", function () {
+                    LuxeAuth.logout().then(function () { AuthUI.redirect("login.html"); });
+                });
+            }
+
+            AuthUI.initAuth(function (user) {
+                if (!user || !user.emailVerified) {
+                    AuthUI.redirect("login.html");
+                    return;
+                }
+
+                // Profile info (best-effort; auth token is the source of truth)
+                LuxeAuth.getUserProfile(user.uid).then(function (profile) {
+                    var info = document.getElementById("profile-info");
+                    var name = profile && profile.displayName ? profile.displayName : (user.displayName || user.email);
+                    var email = user.email;
+                    var phone = (profile && profile.phone) ? profile.phone : "—";
+
+                    info.innerHTML =
+                        "<div class='auth-field'><label>Full Name</label><div style='font-weight:600;color:#4a080d;'>" + name + "</div></div>" +
+                        "<div class='auth-field'><label>Email Address</label><div style='font-weight:600;color:#4a080d;'>" + email + "</div></div>" +
+                        "<div class='auth-field'><label>Phone Number</label><div style='font-weight:600;color:#4a080d;'>" + phone + "</div></div>" +
+                        "<button type='button' class='btn btn-outline' id='edit-profile' style='margin-top:8px;'>Edit Profile</button>";
+
+                    wireEditProfile(name, phone, info);
+                });
+
+                // UI wiring that must always be available regardless of profile load
+                wireChangePassword();
+                wireOrders();
+                wireLogout();
+            });
+        })();
+    </script>
+
+    <script src="chat-widget.js"></script>
+    <script src="script.js"></script>
+
+</body>
+
+</html>

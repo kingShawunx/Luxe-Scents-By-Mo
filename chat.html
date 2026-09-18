@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Chat With Us | LUXE SCENT BY MO | Luxury Perfume Oils</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="auth.css">
+</head>
+
+<body>
+
+    <!-- SKIP LINK -->
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <!-- HEADER -->
+    <header>
+
+        <div class="logo">
+            <img src="Half part Logo.jpeg" alt="LUXE SCENT BY MO logo">
+            <h1>LUXE SCENT BY MO</h1>
+        </div>
+
+        <nav id="nav-menu" aria-label="Primary">
+            <a href="index.html">Home</a>
+            <a href="shop.html">Shop</a>
+            <a href="about.html">About</a>
+            <a href="collection.html">Collection</a>
+            <a href="testimonials.html">Testimonials</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+
+        <button
+            class="menu-btn"
+            onclick="toggleMenu()"
+            aria-label="Toggle navigation menu"
+            aria-expanded="false"
+            aria-controls="nav-menu"
+        >
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+
+    </header>
+
+
+    <!-- MAIN -->
+    <main id="main">
+
+        <section class="chat-section">
+
+            <div class="chat-card">
+
+                <div class="chat-header" style="padding:16px 20px;border-bottom:1px solid rgba(70,0,8,0.1);display:flex;align-items:center;justify-content:space-between;">
+                    <h2 style="margin:0;font-size:20px;">Chat With Us</h2>
+                    <a href="https://api.whatsapp.com/send?phone=2348127941749" target="_blank" class="btn btn-outline" style="min-height:36px;padding:8px 16px;font-size:11px;">WhatsApp +234 812 794 1749</a>
+                </div>
+
+                <div class="chat-messages" id="chat-messages">
+                    <p style="padding:0 20px;color:#eadbdb;">Loading your conversation…</p>
+                </div>
+
+                <div class="chat-input">
+                    <input type="text" id="chat-input" placeholder="Type a message…" autocomplete="off">
+                    <button type="button" class="btn chat-send" id="chat-send" style="min-height:44px;padding:12px 24px;">Send</button>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- FOOTER -->
+    <footer>
+
+        <h2>LUXE SCENT BY MO</h2>
+
+        <p>
+            Luxury fragrances. Lasting impressions.
+        </p>
+
+        <p>
+            © 2026 Luxe Scent by Mo. All Rights Reserved.
+        </p>
+
+    </footer>
+
+
+    <!-- Firebase SDK (compat) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="auth.js"></script>
+    <script src="chat.js"></script>
+    <script src="auth-ui.js"></script>
+
+    <script>
+        (function () {
+            "use strict";
+            var messagesEl = document.getElementById("chat-messages");
+            var inputEl = document.getElementById("chat-input");
+            var sendBtn = document.getElementById("chat-send");
+            var activeConv = null;
+            var unsubscribe = null;
+
+            function renderMessages(messages) {
+                var uid = Luxechat.currentUid();
+                if (!messages.length) {
+                    messagesEl.innerHTML = "<p style='padding:0 20px;color:#eadbdb;'>No messages yet. Start the conversation!</p>";
+                    return;
+                }
+                var html = "";
+                messages.forEach(function (m) {
+                    var isMe = m.senderId === uid;
+                    var cls = isMe ? "me" : "them";
+                    var time = m.createdAt && m.createdAt.toDate ? m.createdAt.toDate() : new Date();
+                    var timeStr = "";
+                    try { timeStr = time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }); } catch (e) {}
+                    var readBadge = (isMe && m.read) ? " &middot; <span style='font-size:11px;opacity:0.7'>(read)</span>" : "";
+                    html +=
+                        "<div class='chat-bubble " + cls + "'>" +
+                        "<div>" + escapeHtml(m.message) + "</div>" +
+                        "<div class='chat-meta'>" + (isMe ? "You" : "Seller") + ", " + timeStr + readBadge + "</div>" +
+                        "</div>";
+                });
+                messagesEl.innerHTML = html;
+                messagesEl.scrollTop = messagesEl.scrollHeight;
+            }
+
+            function escapeHtml(s) {
+                return String(s).replace(/[&<>"']/g, function (c) {
+                    return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c];
+                });
+            }
+
+            function sendMessage() {
+                var text = inputEl.value;
+                if (!text.trim() || !activeConv) return;
+                Luxechat.sendMessage(activeConv, text, "customer").catch(function (err) {
+                    alert(err.message);
+                });
+                inputEl.value = "";
+            }
+
+            AuthUI.initAuth(function (user) {
+                if (!user || !user.emailVerified) {
+                    AuthUI.redirect("login.html");
+                    return;
+                }
+                LuxeAuth.getUserProfile().then(function (profile) {
+                    document.querySelector(".chat-header h2").textContent =
+                        "Chat With Us — Hi, " + (profile && profile.displayName ? profile.displayName : "friend");
+                }).catch(function () {});
+
+                Luxechat.getOrCreateConversation().then(function (conv) {
+                    activeConv = conv.id;
+                    unsubscribe = Luxechat.listenMessages(activeConv, renderMessages);
+                }).catch(function (err) {
+                    messagesEl.innerHTML = "<p style='padding:0 20px;color:#d94a4a;'>Could not open conversation: " + err.message + "</p>";
+                });
+            });
+
+            sendBtn.addEventListener("click", sendMessage);
+            inputEl.addEventListener("keypress", function (e) {
+                if (e.key === "Enter") sendMessage();
+            });
+        })();
+    </script>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
